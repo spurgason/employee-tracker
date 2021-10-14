@@ -1,4 +1,10 @@
+const Department = require('./lib/Department');
+const Employee = require('./lib/Employee');
+const Role = require('./lib/Role');
+
+const sql = require('mysql2');
 const inquirer = require('inquirer');
+const consoleTable = require('console.table');
 
 
 const promptUser = () => {
