@@ -1,7 +1,3 @@
-const Department = require('./lib/Department');
-// const Employee = require('./lib/Employee');
-// const Role = require('./lib/Role');
-
 const inquirer = require('inquirer');
 
 
