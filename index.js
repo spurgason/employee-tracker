@@ -1,4 +1,5 @@
 const db = require('./data/connection')
+const cTable = require('console.table');
 const inquirer = require('inquirer');
 
 
@@ -22,13 +23,13 @@ const promptUser = () => {
             }
         ]).then(({selectAction}) => {
             if (selectAction === 'View all departments') {
-                
+                viewDepartments();
             } 
             if (selectAction === 'View all roles') {
-                
+                viewRoles();
             } 
             if (selectAction === 'View all employees') {
-                
+                viewEmployees();
             } 
             if (selectAction === 'Add a department') {
                 
@@ -45,3 +46,44 @@ const promptUser = () => {
         });
 
 }
+
+const viewDepartments = () => {
+    const sql = `SELECT id AS id, name AS department
+                FROM department`;
+
+    db.query(sql, (err, result) => {
+        if (err) throw err;
+        console.table(result);
+    });
+};
+
+const viewRoles = () => {
+    const sql = `SELECT * FROM role`;
+
+    db.query(sql, (err, result) => {
+        if (err) throw err;
+        console.table(result);
+    });
+}
+
+const viewEmployees = () => {
+    const sql = `SELECT 
+
+                employee.id,
+                employee.first_name,
+                employee.last_name,
+                role.title AS role
+                
+                FROM employee
+                LEFT JOIN role 
+                ON employee.role_id = role.id`;
+
+                
+
+    db.query(sql, (err, result) => {
+        if (err) throw err;
+        console.table(result);
+    });
+} 
+
+promptUser();

@@ -1,6 +1,8 @@
+SET foreign_key_checks = 0;
 DROP TABLE IF EXISTS department;
 DROP TABLE IF EXISTS role;
 DROP TABLE IF EXISTS employee;
+SET foreign_key_checks = 1;
 
 CREATE TABLE department (
     id INTEGER AUTO_INCREMENT PRIMARY KEY,
@@ -12,7 +14,7 @@ CREATE TABLE role (
     title VARCHAR(30) NOT NULL,
     salary DECIMAL(8,2),
     department_id INTEGER,
-    CONSTRAINT fk_department FOREIGN KEY (department_id) REFERENCES department(id) ON DELETE SET NULL
+    CONSTRAINT fk_department_id FOREIGN KEY (department_id) REFERENCES department(id) ON DELETE SET NULL
 );
 
 CREATE TABLE employee (
