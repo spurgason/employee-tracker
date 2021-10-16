@@ -1,3 +1,4 @@
+const db = require('./data/connection')
 const inquirer = require('inquirer');
 
 
@@ -41,6 +42,6 @@ const promptUser = () => {
             if (selectAction === 'Update an employee role') {
                 
             } 
-        })
+        });
 
 }
