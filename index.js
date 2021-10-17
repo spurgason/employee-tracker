@@ -108,8 +108,14 @@ const addDepartment = () => {
 }
 
 const addRole = () => {
-    const deptQuery = `SELECT name AS department FROM departments`;
-    inquirer
+
+    let deptQuery = `SELECT * FROM departments`;
+
+    db.query(deptQuery, (err, result) =>{
+        if (err) throw err;
+        const departments = result.map(({name}) => ({value:name}));
+
+        inquirer
         .prompt([
             {
                 type: 'input',
@@ -122,15 +128,16 @@ const addRole = () => {
                 message: 'Enter new role salary:'
             },
             {
-                type: 'input',
+                type: 'list',
                 name: 'department',
                 message: 'What department does this role belong to?',
-                choices: [deptQuery]
+                choices: departments
             }
         
         ]).then(input => {
-            const params = [input.role, input.salary]
+            const params = [input.role, input.salary, input.department]
         })
+    })
 }
 
 promptUser();
