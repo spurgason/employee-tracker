@@ -109,35 +109,42 @@ const addDepartment = () => {
 
 const addRole = () => {
 
-    let deptQuery = `SELECT * FROM departments`;
+    let deptQuery = `SELECT * FROM department`;
 
-    db.query(deptQuery, (err, result) =>{
+    db.query(deptQuery, (err, result) => {
         if (err) throw err;
-        const departments = result.map(({name}) => ({value:name}));
+        const departments = result.map(({ name }) => ({ value: name }));
 
         inquirer
-        .prompt([
-            {
-                type: 'input',
-                name: 'role',
-                message: 'Enter new role name:'
-            },
-            {
-                type: 'input',
-                name: 'salary',
-                message: 'Enter new role salary:'
-            },
-            {
-                type: 'list',
-                name: 'department',
-                message: 'What department does this role belong to?',
-                choices: departments
-            }
-        
-        ]).then(input => {
-            const params = [input.role, input.salary, input.department]
-        })
-    })
+            .prompt([
+                {
+                    type: 'input',
+                    name: 'role',
+                    message: 'Enter new role name:'
+                },
+                {
+                    type: 'input',
+                    name: 'salary',
+                    message: 'Enter new role salary:'
+                },
+                {
+                    type: 'list',
+                    name: 'department',
+                    message: 'What department does this role belong to?',
+                    choices: departments
+                }
+
+            ]).then(input => {
+                const params = [input.role, input.salary, input.department]
+                const sql = `INSERT INTO role (title, salary, department_id)
+                        VALUES (?,?,?)`
+
+                db.query(sql, params, (err, result) => {
+                    if (err) throw err;
+                    console.log('Role Added');
+                });
+            });
+    });
 }
 
 promptUser();
