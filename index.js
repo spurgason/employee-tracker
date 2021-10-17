@@ -38,7 +38,7 @@ const promptUser = () => {
                 addRole();
             }
             if (selectAction === 'Add an employee') {
-
+                addEmployee();
             }
             if (selectAction === 'Update an employee role') {
 
@@ -113,7 +113,7 @@ const addRole = () => {
 
     db.query(deptQuery, (err, result) => {
         if (err) throw err;
-        const departments = result.map(({ name }) => ({ value: name }));
+        const departments = result.map(({ name, id }) => ({ name: name, value: id }));
 
         inquirer
             .prompt([
@@ -146,5 +146,56 @@ const addRole = () => {
             });
     });
 }
+
+const addEmployee = () => {
+
+    let roleQuery = `SELECT * FROM role`;
+    let managerQuery = `SELECT 
+                        CONCAT(manager.first_name, " ", manager.last_name) AS manager
+
+                        FROM employee 
+                        LEFT JOIN employee manager ON employee.manager_id = manager.id`;
+
+    db.query(roleQuery, (err, result) => {
+        if (err) throw err;
+        const roles = result.map(({title, id}) => ({name: title, value: id}));
+    db.query(managerQuery, (error, data) => {
+        if (error) throw err;
+        const managers = data.map(({manager, id}) => ({name:manager, value:id}));
+    
+        inquirer
+            .prompt([
+                {
+                    type: 'input',
+                    name: 'firstName',
+                    message: "Enter employees' first name:"
+                },
+                {
+                    type: 'input',
+                    name: 'lastName',
+                    message: "Enter employees' last name:"
+                },
+                {
+                    type: 'list',
+                    name: 'role',
+                    message: "What is this employees' role?",
+                    choices: roles
+                },
+                {
+                    type: 'list',
+                    name: 'manager',
+                    message: "Who is this employees' manager?",
+                    choices: managers
+                }
+            ]).then(input => {
+                const params = [input.firstName, input.lastName, input.role, input.manager]
+                console.log(params);
+            });
+
+        });
+    });
+}
+
+
 
 promptUser();
