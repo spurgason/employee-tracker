@@ -18,7 +18,8 @@ const promptUser = () => {
                     'Add a department',
                     'Add a role',
                     'Add an employee',
-                    'Update an employee role'
+                    'Update an employee role',
+                    'Finished'
                 ]
             }
         ]).then(({ selectAction }) => {
@@ -42,6 +43,9 @@ const promptUser = () => {
             }
             if (selectAction === 'Update an employee role') {
                 updateEmployee();
+            }
+            if (selectAction === 'Finished') {
+                process.exit()
             }
         });
 
@@ -155,18 +159,16 @@ const addRole = () => {
 const addEmployee = () => {
 
     const roleQuery = `SELECT * FROM role`;
-    const managerQuery = `SELECT 
-                        CONCAT(manager.first_name, " ", manager.last_name) AS manager
-
-                        FROM employee 
-                        LEFT JOIN employee manager ON employee.manager_id = manager.id`;
+    const managerQuery = `SELECT * FROM employee`;
 
     db.query(roleQuery, (err, result) => {
         if (err) throw err;
         const roles = result.map(({ title, id }) => ({ name: title, value: id }));
         db.query(managerQuery, (error, data) => {
             if (error) throw err;
-            const managers = data.map(({ manager, id }) => ({ name: manager, value: id }));
+            const managers = data.map(({ first_name, last_name, id }) => ({ name: first_name + " " + last_name, value: id }));
+          
+
 
             inquirer
                 .prompt([
@@ -199,6 +201,7 @@ const addEmployee = () => {
                     db.query(sql, params, (err, result) => {
                         if (err) throw err;
                         console.log('Employee added');
+                        promptUser();
                     });
                 });
         });
@@ -206,47 +209,44 @@ const addEmployee = () => {
 }
 
 const updateEmployee = () => {
-    const employeeQuery = `SELECT  
-                           employee.id,
-                           employee.first_name,
-                           employee.last_name,
-                           role.title AS role,
-                           role.id AS role_id
-
-                           FROM employee
-                           LEFT JOIN role ON employee.role_id = role.id`;
+    const employeeQuery = `SELECT * FROM employee`;
+    const roleQuery = `SELECT * FROM role`;
 
     db.query(employeeQuery, (err, result) => {
         if (err) throw err;
         const employees = result.map(({ id, first_name, last_name }) => ({ name: first_name + " " + last_name, value: id }));
-        const roles = result.map(({ role, role_id }) => ({ name: role, value: role_id }));
-        inquirer
-            .prompt([
-                {
-                    type: 'list',
-                    name: 'employee',
-                    message: 'Select employee to update:',
-                    choices: employees
+        db.query(roleQuery, (error, data) => {
+            if (error) throw error;
+            const roles = data.map(({ title, id }) => ({ name: title, value: id }));
 
-                },
-                {
-                    type: 'list',
-                    name: 'role',
-                    message: "Select employees' new role:",
-                    choices: roles
-                }
-            ]).then(input => {
-               const params = [ input.role, input.employee];
-               const sql = `UPDATE employee
+            inquirer
+                .prompt([
+                    {
+                        type: 'list',
+                        name: 'employee',
+                        message: 'Select employee to update:',
+                        choices: employees
+
+                    },
+                    {
+                        type: 'list',
+                        name: 'role',
+                        message: "Select employees' new role:",
+                        choices: roles
+                    }
+                ]).then(input => {
+                    const params = [input.role, input.employee];
+                    const sql = `UPDATE employee
                             SET role_id = ?
                             WHERE id = ?`;
-                
-                db.query(sql, params, (err, results) => {
-                    if (err) throw err;
-                    console.log('Employee updated');
-                    promptUser();
+
+                    db.query(sql, params, (err, results) => {
+                        if (err) throw err;
+                        console.log('Employee updated');
+                        promptUser();
+                    });
                 });
-            });
+        });
     });
 }
 
