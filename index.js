@@ -63,7 +63,14 @@ const viewDepartments = () => {
 };
 
 const viewRoles = () => {
-    const sql = `SELECT * FROM role`;
+    const sql = `SELECT 
+                role.id,
+                role.title,
+                role.salary,
+                department.name AS department
+                
+                FROM role
+                LEFT JOIN department ON role.department_id = department.id`;
 
     db.query(sql, (err, result) => {
         if (err) throw err;
