@@ -1,5 +1,7 @@
 # Employee Tracker
 
+![Employee Tracker](/assets/employee-tracker.PNG)
+
 ## Description
 This project is an employee tracker application. This application runs in the command-line and keeps track of the users employees. The user has a range of motion with this application in such a way that they can view, create, and update their business' departments, employees and their employees' roles. 
 
